@@ -1,14 +1,13 @@
 <template>
-  <div>asdasdas</div>
+  <div>{{ props.startVal }}</div>
 </template>
 
-<script setup lang="ts">
-import {} from "vue"
-const props = defineProps([
-  {
-    
-  }
-])
+<script setup>
+
+const props = defineProps({
+  startVal: Number,
+  endVal:Number
+});
 </script>
 
 <style scoped></style>
