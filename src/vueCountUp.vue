@@ -21,7 +21,7 @@ const props = withDefaults(defineProps<propType>(), {
   startVal: 0,
   endVal: 2022,
   autoplay: true,
-  duration: 3000,
+  duration: 5000,
   easingFn: (t, b, c, d) => {
     return (c * (-Math.pow(2, (-10 * t) / d) + 1) * 1024) / 1023 + b;
   },
@@ -59,18 +59,26 @@ const count: (timestamp: number) => void = (timestamp) => {
     propsData.value.duration
   );
 
-  displayValue.value = attr.printVal;
-  requestAnimationFrame(count);
+  displayValue.value = formatNum(attr.printVal);
+
+  if (attr.printVal <= props.endVal) {
+    requestAnimationFrame(count);
+  }
 };
 
 const start = () => {
   requestAnimationFrame(count);
 };
 
-const formatNum = (number) => {
-  const reg = /\./;
+//  保留相应位数的小数
+const formatNum: (num: number) => number = (number) => {
+  let index = number.toString().indexOf(".");
 
-  console.log(number.replace(reg));
+  let pointIndex =props.endVal.toString().length - props.endVal.toString().indexOf(".");
+
+  let newNum = parseFloat(number.toString().substring(0, index + pointIndex));
+
+  return newNum;
 };
 //是否自动开启
 watch(

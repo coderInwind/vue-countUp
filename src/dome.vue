@@ -1,7 +1,7 @@
 <template>
   <div>
     <vueCountUpVue
-      :startVal="12.5"
+      :startVal="1"
       :endVal="100.5"
       :autoplay="flag"
     ></vueCountUpVue>
