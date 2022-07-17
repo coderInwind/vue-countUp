@@ -5,15 +5,22 @@ const HtmlWebpackPlugin = require("html-webpack-plugin");
 
 module.exports = {
   entry: "./src/index.ts",
+  mode: "development",
   output: {
     path: path.resolve(__dirname, "./dist"),
     filename: "vue-count-up.min.js",
   },
   devServer: {
-    //开启gzip
     static: "./dist",
+    //开启gzip
     compress: true,
+    //打开浏览器
     open: true,
+    //热更新
+    hot: true,
+  },
+  resolve: {
+    extensions: [".js", " .json", ".css",".ts"],
   },
   module: {
     rules: [
@@ -40,7 +47,8 @@ module.exports = {
     new VueLoaderPlugin(),
     new CleanWebpackPlugin(),
     new HtmlWebpackPlugin({
-      title: "Output Management",
+      inject: "body",
+      template: "./public/template.html",
     }),
   ],
 };
