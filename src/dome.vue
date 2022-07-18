@@ -1,9 +1,10 @@
 <template>
   <div>
     <vueCountUpVue
-      :startVal="1"
-      :endVal="100.5"
+      :startVal="200"
+      :endVal="100"
       :autoplay="flag"
+      :decimals="2"
     ></vueCountUpVue>
     <button @click="btnClick">切换</button>
   </div>
@@ -16,7 +17,8 @@ import vueCountUpVue from "./vueCountUp.vue";
 const flag: Ref<boolean> = ref(false);
 
 const btnClick = () => {
-  flag.value = true;
+  flag.value = !flag.value;
+  console.log(flag.value);
 };
 </script>
 

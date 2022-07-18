@@ -3,7 +3,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch, Ref, reactive } from "vue";
+import { ref, watch, reactive, computed } from "vue";
 import {
   requestAnimationFrame,
   cancelAnimationFrame,
@@ -16,6 +16,8 @@ interface propType {
   startTime?: number;
   duration?: number;
   easingFn?: (t: number, b: number, c: number, d: number) => number;
+  decimals: number;
+  useEasing: boolean;
 }
 const props = withDefaults(defineProps<propType>(), {
   startVal: 0,
@@ -25,7 +27,14 @@ const props = withDefaults(defineProps<propType>(), {
   easingFn: (t, b, c, d) => {
     return (c * (-Math.pow(2, (-10 * t) / d) + 1) * 1024) / 1023 + b;
   },
+  decimals: 0,
+  useEasing: true,
 });
+
+const countDown = computed(() => {
+  return props.startVal > props.endVal;
+});
+
 // 拷贝到新地址
 const propsData = ref(Object.assign({}, props));
 
@@ -36,6 +45,7 @@ interface attrType {
   timestamp: number | null;
   progress: number | null;
   printVal: number | null;
+  rAF: number | null;
 }
 
 const attr = reactive<attrType>({
@@ -43,41 +53,56 @@ const attr = reactive<attrType>({
   timestamp: null,
   progress: null,
   printVal: null,
+  rAF: null,
 });
 
 const count: (timestamp: number) => void = (timestamp) => {
   if (!attr.startTime) attr.startTime = timestamp;
-
   attr.timestamp = timestamp;
-
   attr.progress = timestamp - attr.startTime;
 
-  attr.printVal = props.easingFn(
-    attr.progress,
-    propsData.value.startVal,
-    propsData.value.endVal - propsData.value.startVal,
-    propsData.value.duration
-  );
+  if (props.useEasing) {
+    if (!countDown) {
+      attr.printVal = props.easingFn(
+        attr.progress,
+        0,
+        propsData.value.endVal - propsData.value.startVal,
+        propsData.value.duration
+      );
+    } else {
+      attr.printVal = props.easingFn(
+        attr.progress,
+        propsData.value.startVal,
+        propsData.value.endVal - propsData.value.startVal,
+        propsData.value.duration
+      );
+    }
+  } else {
+    if (!countDown) {
+      attr.printVal = propsData.value.endVal-propsData.value.startVal/
+    } else {
+    }
+  }
 
   displayValue.value = formatNum(attr.printVal);
 
-  if (attr.printVal <= props.endVal) {
-    requestAnimationFrame(count);
+  if (attr.progress <= props.duration) {
+    attr.rAF = requestAnimationFrame(count);
   }
 };
 
 const start = () => {
-  requestAnimationFrame(count);
+  attr.rAF = requestAnimationFrame(count);
+  console.log(attr.rAF);
+};
+
+const shop = () => {
+  cancelAnimationFrame(attr.rAF as number);
 };
 
 //  保留相应位数的小数
-const formatNum: (num: number) => number = (number) => {
-  let index = number.toString().indexOf(".");
-
-  let pointIndex =props.endVal.toString().length - props.endVal.toString().indexOf(".");
-
-  let newNum = parseFloat(number.toString().substring(0, index + pointIndex));
-
+const formatNum: (num: number) => number = (num) => {
+  let newNum = parseInt(num.toFixed(props.decimals));
   return newNum;
 };
 //是否自动开启
@@ -87,6 +112,8 @@ watch(
     if (props.autoplay) {
       start();
     } else {
+      console.log("停止了");
+      shop();
     }
   },
   {

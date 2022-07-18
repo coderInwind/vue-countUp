@@ -2,19 +2,16 @@ let lastTime = 0;
 const prefixes = "webkit moz ms o".split(" "); // 各浏览器前缀
 
 let requestAnimationFrame:
-  | (() => void)
-  | (((callback: FrameRequestCallback) => number) &
-      ((callback: FrameRequestCallback) => number));
-let cancelAnimationFrame:
-  | (() => void)
-  | (((handle: number) => void) & ((handle: number) => void));
+  | (() => null)
+  | ((callback: FrameRequestCallback) => number);
+let cancelAnimationFrame: (() => void) | ((handle: number) => void);
 
 const isServer = typeof window === "undefined";
 if (isServer) {
-  requestAnimationFrame = function () {
-    return;
+  requestAnimationFrame = () => {
+    return null;
   };
-  cancelAnimationFrame = function () {
+  cancelAnimationFrame = () => {
     return;
   };
 } else {
