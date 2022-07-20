@@ -3,7 +3,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch, reactive, computed } from "vue";
+import { ref, watch, reactive, computed, onUnmounted } from "vue";
 import {
   requestAnimationFrame,
   cancelAnimationFrame,
@@ -18,17 +18,19 @@ interface propType {
   easingFn?: (t: number, b: number, c: number, d: number) => number;
   decimals: number;
   useEasing: boolean;
+  separator: string;
 }
 const props = withDefaults(defineProps<propType>(), {
   startVal: 0,
   endVal: 2022,
   autoplay: true,
-  duration: 5000,
+  duration: 3000,
   easingFn: (t, b, c, d) => {
     return (c * (-Math.pow(2, (-10 * t) / d) + 1) * 1024) / 1023 + b;
   },
   decimals: 0,
   useEasing: true,
+  separator: ",",
 });
 
 const countDown = computed(() => {
@@ -38,7 +40,7 @@ const countDown = computed(() => {
 // 拷贝到新地址
 const propsData = ref(Object.assign({}, props));
 
-let displayValue = ref(props.startVal);
+let displayValue = ref<number | string>(props.startVal);
 
 interface attrType {
   startTime: number | null;
@@ -79,32 +81,47 @@ const count: (timestamp: number) => void = (timestamp) => {
     }
   } else {
     if (!countDown) {
-      attr.printVal = propsData.value.endVal-propsData.value.startVal/
+      attr.printVal =
+        propsData.value.startVal +
+        (propsData.value.startVal - propsData.value.endVal) *
+          (attr.progress / props.duration);
     } else {
+      attr.printVal =
+        propsData.value.startVal -
+        (propsData.value.startVal - propsData.value.endVal) *
+          (attr.progress / props.duration);
     }
   }
 
-  displayValue.value = formatNum(attr.printVal);
+  if (countDown) {
+    attr.printVal = attr.printVal > props.endVal ? attr.printVal : props.endVal;
+  } else {
+    attr.printVal = attr.printVal < props.endVal ? attr.printVal : props.endVal;
+  }
 
-  if (attr.progress <= props.duration) {
+  displayValue.value = formatNum(attr.printVal);
+  if (attr.progress < props.duration) {
     attr.rAF = requestAnimationFrame(count);
   }
 };
 
 const start = () => {
   attr.rAF = requestAnimationFrame(count);
-  console.log(attr.rAF);
 };
 
 const shop = () => {
   cancelAnimationFrame(attr.rAF as number);
 };
 
-//  保留相应位数的小数
-const formatNum: (num: number) => number = (num) => {
-  let newNum = parseInt(num.toFixed(props.decimals));
-  return newNum;
+const formatNum: (num: number) => string = (num) => {
+  let numArr: string[] = num.toFixed(props.decimals).split(".");
+  let num1 = numArr[0];
+  let num2 = numArr[1];
+  let formatNum = num1 + (numArr.length > 1 ? props.separator : "") + num2;
+
+  return formatNum;
 };
+
 //是否自动开启
 watch(
   () => props.autoplay,
@@ -112,7 +129,6 @@ watch(
     if (props.autoplay) {
       start();
     } else {
-      console.log("停止了");
       shop();
     }
   },
@@ -120,6 +136,10 @@ watch(
     immediate: true,
   }
 );
+
+onUnmounted(() => {
+  cancelAnimationFrame(attr.rAF as number);
+});
 </script>
 
 <style scoped></style>

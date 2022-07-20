@@ -1,10 +1,11 @@
 <template>
   <div>
     <vueCountUpVue
-      :startVal="200"
-      :endVal="100"
+      :startVal="100"
+      :endVal="1.5"
       :autoplay="flag"
       :decimals="2"
+      :useEasing="true"
     ></vueCountUpVue>
     <button @click="btnClick">切换</button>
   </div>
