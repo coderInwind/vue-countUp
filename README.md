@@ -2,8 +2,13 @@
 
 ### How to use?
 ```bash
-npm install vue-count-to
+npm install vue-count-up-next
 ```
+
+ [![vue3](https://img.shields.io/badge/vue-3.x-brightgreen.svg)](https://vuejs.org/)
+ [![vue3](https://img.shields.io/badge/TypeScript-brightgreen.svg)](https://vuejs.org/)
+ [![license](https://img.shields.io/github/license/mashape/apistatus.svg)](https://github.com/coderLgee/vue-countUp)
+
 
 ### Example
 
