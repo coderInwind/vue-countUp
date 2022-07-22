@@ -1,11 +1,12 @@
 {
-  "name": "vue-countUp",
-  "version": "1.0.0",
+  "name": "vue-count-up-next",
+  "version": "1.0.1",
   "description": "Let the number scroll js library",
-  "main": "index.js",
+  "main": "./dist/vue-count-up.min.js",
   "repository": "https://github.com/coderLgee/vue-countUp.git",
   "author": "Lgee <1565692947@qq.com>",
   "license": "MIT",
+  "homepage": "https://github.com/coderLgee/vue-countUp",
   "scripts": {
     "build": "webpack",
     "start": "npx webpack-dev-server",

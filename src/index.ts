@@ -1,5 +1,6 @@
-import VueCountUp from "./dome.vue";
+import CountUp from "./vueCountUp.vue";
+export default CountUp;
 
-import { createApp } from "vue";
-const app = createApp(VueCountUp).mount("#app");
-export default VueCountUp
+if (typeof window !== "undefined" && window.vue) {
+  window.Vue.component("count-up", CountUp);
+}
